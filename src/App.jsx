@@ -258,6 +258,7 @@ const projects = [
       "Structured the project for future expansion into more automated execution.",
     ],
     tech: ["Python", "Weather APIs", "Kalshi API", "Automation"],
+    links: [{ label: "kalshi.jackgpt.org", href: "https://kalshi.jackgpt.org" }],
     screenshots: [
       {
         src: "/project-images/kalshi-temperature-bot/kalshi-weather-architecture.png",
@@ -442,6 +443,16 @@ const fallbackStatuses = [
     status: "checking",
   },
   {
+    key: "kalshi-temperature-bot",
+    name: "Kalshi Temperature Bot",
+    description: "Checking the live Kalshi bot dashboard and scanner heartbeat.",
+    endpoint: "https://kalshi.jackgpt.org/health",
+    latencyMs: null,
+    httpStatus: "â€”",
+    checkedAt: null,
+    status: "checking",
+  },
+  {
     key: "minecraft",
     name: "Minecraft Server",
     description: "Checking the public Minecraft server status probe.",
@@ -521,6 +532,12 @@ const accessLinks = [
     href: "https://market.jackgpt.org",
     description:
       "AI-powered equity research dashboard with live market snapshots and generated bull/bear analysis.",
+  },
+  {
+    label: "kalshi.jackgpt.org",
+    href: "https://kalshi.jackgpt.org",
+    description:
+      "Live Kalshi temperature bot operations dashboard with scanner heartbeat, exposure, and trade-state summaries.",
   },
   {
     label: "jackgpt.org",

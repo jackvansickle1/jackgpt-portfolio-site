@@ -37,6 +37,12 @@ const SERVICE_TARGETS = [
     description: "AI-powered equity research dashboard health endpoint is reachable.",
   },
   {
+    key: "kalshi-temperature-bot",
+    name: "Kalshi Temperature Bot",
+    endpoint: "https://kalshi.jackgpt.org/health",
+    description: "Kalshi bot scanner dashboard and health endpoint are reachable.",
+  },
+  {
     key: "minecraft",
     name: "Minecraft Server",
     endpoint: "https://market.jackgpt.org/api/minecraft/health",
