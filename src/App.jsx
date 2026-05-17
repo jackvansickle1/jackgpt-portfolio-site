@@ -239,40 +239,27 @@ const projects = [
   {
     id: "kalshi-temperature-bot",
     name: "Kalshi Temperature Bot",
-    subtitle: "Automated weather-market monitoring",
+    subtitle: "Live weather-market scanner and operations dashboard",
     icon: Cloud,
     accent: "blue",
-    tags: ["Python", "APIs", "Automation", "Trading signals"],
+    tags: ["Python", "Kalshi API", "Automation", "Operations"],
     summary:
-      "A bot designed to monitor weather-based prediction markets and evaluate market opportunities.",
+      "An automated weather-market scanner with startup supervision, daily maintenance, and a public-safe operations dashboard.",
     description:
-      "This project monitors weather-market contracts and compares market pricing against temperature forecasts and other data sources. The goal is to identify market inefficiencies and surface trade opportunities based on quantifiable conditions.",
+      "This project monitors weather-market contracts with private strategy logic. The public dashboard reports operational health only, including scanner heartbeat, maintenance state, and aggregate activity counts.",
     howItWorks: [
-      "The bot retrieves market data and weather forecast information from relevant APIs.",
-      "It applies rules or analysis to compare implied probabilities with expected weather outcomes.",
-      "The system flags actionable scenarios and can be extended with notifications or order placement.",
+      "A private scanner retrieves market and weather inputs for non-public evaluation.",
+      "A startup supervisor keeps the scanner running and performs daily maintenance.",
+      "The public dashboard intentionally redacts formulas, model weights, logs, prices, edges, and trade-level rows.",
     ],
     developed: [
-      "Built data-ingestion and monitoring logic around weather and market feeds.",
-      "Tested calculations and threshold logic for identifying candidate positions.",
-      "Structured the project for future expansion into more automated execution.",
+      "Installed startup supervision and daily maintenance automation.",
+      "Built a dashboard surface that separates operational health from private strategy logic.",
+      "Kept proprietary calculation code and trade-level strategy data out of public repositories.",
     ],
-    tech: ["Python", "Weather APIs", "Kalshi API", "Automation"],
+    tech: ["Python", "Kalshi API", "Automation", "Cloudflare Tunnel"],
     links: [{ label: "kalshi.jackgpt.org", href: "https://kalshi.jackgpt.org" }],
-    screenshots: [
-      {
-        src: "/project-images/kalshi-temperature-bot/kalshi-weather-architecture.png",
-        caption: "Architecture capture showing forecast ingestion, Kalshi market data, storage, and resolution flow",
-      },
-      {
-        src: "/project-images/kalshi-temperature-bot/kalshi-weather-risk-engine.png",
-        caption: "Signal and risk engine snippets covering sizing, order-book checks, and observation exits",
-      },
-      {
-        src: "/project-images/kalshi-temperature-bot/kalshi-weather-calibration.png",
-        caption: "Persisted calibration artifacts and optimized weather-model weights from local project data",
-      },
-    ],
+    screenshots: [],
   },
   {
     id: "kalshi-btc-bot",
@@ -286,30 +273,17 @@ const projects = [
     description:
       "This bot is designed to place and manage orders in Kalshi BTC-related markets with the goal of capturing spread and liquidity opportunities. It monitors market conditions and updates order placement according to configurable rules.",
     howItWorks: [
-      "The bot pulls market data, evaluates bidâ€“ask spreads, and determines where to place orders.",
-      "It manages risk using position limits and order-update logic.",
-      "The strategy can be tuned based on volatility, expected value, and inventory constraints.",
+      "The private bot evaluates market data and manages order behavior with non-public strategy logic.",
+      "Risk controls and execution parameters are kept out of public repositories.",
+      "The public portfolio describes the project at a high level without exposing copyable trading calculations.",
     ],
     developed: [
       "Researched exchange behavior and trading constraints.",
-      "Implemented order-management logic and tested execution flow.",
-      "Designed the system for iterative tuning and monitoring.",
+      "Implemented private order-management logic and tested execution flow.",
+      "Designed the system for iterative tuning and monitoring while keeping strategy details private.",
     ],
     tech: ["Python", "Kalshi API", "Trading logic", "Risk controls"],
-    screenshots: [
-      {
-        src: "/project-images/kalshi-btc-bot/kalshi-btc-configuration.png",
-        caption: "Parallel market-making configuration for BTC and related prediction-market strategies",
-      },
-      {
-        src: "/project-images/kalshi-btc-bot/kalshi-btc-avellaneda-engine.png",
-        caption: "Avellaneda-Stoikov quote engine with inventory skew, spread caps, and position limits",
-      },
-      {
-        src: "/project-images/kalshi-btc-bot/kalshi-btc-runtime-log.png",
-        caption: "Sanitized runtime trace showing market polling, inventory checks, and order maintenance",
-      },
-    ],
+    screenshots: [],
   },
 
   {
