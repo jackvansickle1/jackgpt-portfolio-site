@@ -17,7 +17,6 @@ import {
   Server,
   Shield,
   TrendingUp,
-  TerminalSquare,
   Cloud,
   X,
 } from "lucide-react";
@@ -316,39 +315,6 @@ const projects = [
       {
         src: "/project-images/ninjatrader-bot/ninjatrader-risk-controls.png",
         caption: "Risk-control implementation for stops, targets, ATR sizing, and daily loss limits",
-      },
-    ],
-  },
-  {
-    id: "windows-use",
-    name: "Windows-use Agent",
-    subtitle: "GUI automation with AI assistance",
-    icon: TerminalSquare,
-    accent: "rose",
-    tags: ["Automation", "Windows", "Agent workflows"],
-    summary:
-      "An agent-based approach to automating Windows tasks through interface interaction.",
-    description:
-      "This project explores using an AI-guided agent to interact with Windows applications and user interfaces. It is intended to automate repetitive tasks and demonstrate how language-model reasoning can be applied to real desktop environments.",
-    howItWorks: [
-      "The agent interprets instructions and performs actions within a Windows environment.",
-      "It interacts with the GUI to navigate applications, enter data, and respond to on-screen context.",
-      "The system can be extended with guardrails and monitoring for repeatable workflows.",
-    ],
-    developed: [
-      "Tested tools for controlling and reading Windows interfaces.",
-      "Developed workflows for repeatable task execution.",
-      "Explored practical applications of agent-based desktop automation.",
-    ],
-    tech: ["Windows", "Automation", "AI agent workflows"],
-    screenshots: [
-      {
-        src: "/project-images/windows-use/windows-use-agent-config.png",
-        caption: "Local Windows-use configuration artifact for GUI automation with a local model provider",
-      },
-      {
-        src: "/project-images/windows-use/windows-use-workflow-map.png",
-        caption: "Portfolio-safe workflow map for observe, plan, act, and verify desktop automation loops",
       },
     ],
   },
