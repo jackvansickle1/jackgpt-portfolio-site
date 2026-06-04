@@ -26,9 +26,11 @@ const SERVICE_TARGETS = [
   },
   {
     key: "jackgpt-search",
-    name: "search.jackgpt.org",
-    endpoint: "https://search.jackgpt.org",
-    description: "Branded JackGPT Search endpoint is reachable.",
+    name: "JackGPT Search",
+    endpoint: "https://search.jackgpt.org/search?q=openai&format=json",
+    publicUrl: "https://search.jackgpt.org",
+    minResults: 1,
+    description: "Branded JackGPT Search is returning real search results.",
   },
   {
     key: "market-desk",
@@ -73,19 +75,7 @@ async function checkTarget(target) {
   try {
     let response;
 
-    try {
-      response = await fetch(target.endpoint, {
-        method: "HEAD",
-        redirect: "follow",
-        signal,
-        cf: { cacheTtl: 0, cacheEverything: false },
-        headers: {
-          "cache-control": "no-store",
-          pragma: "no-cache",
-          "user-agent": "jackgpt-status-probe",
-        },
-      });
-    } catch {
+    if (target.minResults) {
       response = await fetch(target.endpoint, {
         method: "GET",
         redirect: "follow",
@@ -97,16 +87,62 @@ async function checkTarget(target) {
           "user-agent": "jackgpt-status-probe",
         },
       });
+    } else {
+      try {
+        response = await fetch(target.endpoint, {
+          method: "HEAD",
+          redirect: "follow",
+          signal,
+          cf: { cacheTtl: 0, cacheEverything: false },
+          headers: {
+            "cache-control": "no-store",
+            pragma: "no-cache",
+            "user-agent": "jackgpt-status-probe",
+          },
+        });
+      } catch {
+        response = await fetch(target.endpoint, {
+          method: "GET",
+          redirect: "follow",
+          signal,
+          cf: { cacheTtl: 0, cacheEverything: false },
+          headers: {
+            "cache-control": "no-store",
+            pragma: "no-cache",
+            "user-agent": "jackgpt-status-probe",
+          },
+        });
+      }
     }
 
     const latencyMs = Date.now() - startedAt;
     const httpStatus = response.status;
-    const status =
+    let status =
       response.ok
         ? latencyMs > 2000
           ? "degraded"
           : "online"
         : "offline";
+    let description = target.description;
+
+    if (target.minResults) {
+      try {
+        const data = await response.clone().json();
+        const resultCount = Array.isArray(data.results) ? data.results.length : 0;
+        if (!response.ok) {
+          status = "offline";
+          description = "JackGPT Search functional probe failed.";
+        } else if (resultCount < target.minResults) {
+          status = "degraded";
+          description = `JackGPT Search loaded but returned ${resultCount} result(s).`;
+        } else if (status === "online") {
+          description = `JackGPT Search returned ${resultCount} result(s).`;
+        }
+      } catch {
+        status = response.ok ? "degraded" : "offline";
+        description = "JackGPT Search functional probe did not return valid JSON.";
+      }
+    }
 
     return {
       ...target,
@@ -114,6 +150,7 @@ async function checkTarget(target) {
       httpStatus,
       latencyMs,
       checkedAt: new Date().toISOString(),
+      description,
     };
   } catch (error) {
     return {
