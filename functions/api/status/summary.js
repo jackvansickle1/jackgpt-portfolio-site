@@ -27,7 +27,7 @@ const SERVICE_TARGETS = [
   {
     key: "jackgpt-search",
     name: "JackGPT Search",
-    endpoint: "https://search.jackgpt.org/search?q=openai&format=json",
+    endpoint: "https://search.jackgpt.org/search?q=openai&categories=general&format=json",
     publicUrl: "https://search.jackgpt.org",
     minResults: 1,
     description: "Branded JackGPT Search is returning real search results.",
