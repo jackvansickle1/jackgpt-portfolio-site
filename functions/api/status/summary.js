@@ -2,26 +2,24 @@
 const SERVICE_TARGETS = [
   {
     key: "openwebui",
-    name: "OpenWebUI + Ollama",
-    endpoint: "https://app.jackgpt.org",
-    description: "Public chat interface and model routing are reachable.",
-  },
-  {
-    key: "automatic1111",
-    name: "AUTOMATIC1111",
-    endpoint: "https://images.jackgpt.org",
-    description: "Image-generation service is reachable.",
+    name: "JackGPT AI Workspace",
+    endpoint: "https://app.jackgpt.org/api/version",
+    publicUrl: "https://app.jackgpt.org",
+    description: "Public AI workspace and model routing are reachable.",
   },
   {
     key: "images",
-    name: "images.jackgpt.org",
+    name: "JackGPT Image Gen",
     endpoint: "https://images.jackgpt.org",
-    description: "Public image-generation endpoint is reachable.",
+    publicUrl: "https://images.jackgpt.org",
+    method: "GET",
+    description: "Public GPU-backed image-generation interface is reachable.",
   },
   {
     key: "meshcentral",
-    name: "mesh.jackgpt.org",
+    name: "JackGPT Mesh",
     endpoint: "https://mesh.jackgpt.org",
+    publicUrl: "https://mesh.jackgpt.org",
     description: "Remote-management endpoint is reachable.",
   },
   {
@@ -29,33 +27,78 @@ const SERVICE_TARGETS = [
     name: "JackGPT Search",
     endpoint: "https://search.jackgpt.org/search?q=openai&categories=general&format=json",
     publicUrl: "https://search.jackgpt.org",
+    method: "GET",
     minResults: 1,
     description: "Branded JackGPT Search is returning real search results.",
   },
   {
     key: "market-desk",
-    name: "Market Desk",
+    name: "JackGPT Market Desk",
     endpoint: "https://market.jackgpt.org/health",
+    publicUrl: "https://market.jackgpt.org",
     description: "AI-powered equity research dashboard health endpoint is reachable.",
   },
   {
+    key: "casino",
+    name: "JackGPT Casino",
+    endpoint: "https://casino.jackgpt.org/health",
+    publicUrl: "https://casino.jackgpt.org",
+    description: "Playable casino game endpoint is reachable.",
+  },
+  {
     key: "kalshi-temperature-bot",
-    name: "Kalshi Temperature Bot",
+    name: "Kalshi Climate Desk",
     endpoint: "https://kalshi.jackgpt.org/health",
-    description: "Kalshi bot scanner dashboard and health endpoint are reachable.",
+    publicUrl: "https://kalshi.jackgpt.org",
+    description: "Kalshi Climate Desk scanner heartbeat is reachable.",
+    readJsonStatus: true,
+  },
+  {
+    key: "pearl-desk",
+    name: "JackGPT Pearl Desk",
+    endpoint: "https://pearl.jackgpt.org/health",
+    publicUrl: "https://pearl.jackgpt.org",
+    description: "PRL mining telemetry and GPU idle-guard status are reachable.",
+    readJsonStatus: true,
+  },
+  {
+    key: "moomoo-paper-trader",
+    name: "Moomoo Trading Bot",
+    endpoint: "https://moomoo.jackgpt.org/health",
+    publicUrl: "https://moomoo.jackgpt.org",
+    description: "Moomoo paper-trading runner, OpenD gateway, and scheduler dashboard is reachable.",
+    readJsonStatus: true,
+  },
+  {
+    key: "salad-compute-node",
+    name: "Salad Compute Node",
+    endpoint: "https://salad.jackgpt.org/health",
+    publicUrl: "https://salad.jackgpt.org",
+    description: "Salad host compute service and workload dashboard is reachable.",
+    readJsonStatus: true,
   },
   {
     key: "minecraft",
     name: "Minecraft Server",
     endpoint: "https://market.jackgpt.org/api/minecraft/health",
+    publicUrl: "",
     showEndpoint: false,
     description: "Minecraft server is answering the internal status probe.",
   },
   {
     key: "website",
-    name: "JackGPT Platform",
+    name: "JackGPT Homepage",
     endpoint: "https://jackgpt.org",
+    publicUrl: "https://jackgpt.org",
     description: "Portfolio homepage is reachable.",
+  },
+  {
+    key: "external-watchdog",
+    name: "JackGPT Public Status",
+    endpoint: "https://status.jackgpt.org/health",
+    publicUrl: "https://status.jackgpt.org",
+    description: "Cloudflare-hosted external watchdog is reachable.",
+    readJsonStatus: true,
   },
 ];
 
@@ -70,49 +113,35 @@ function buildTimeoutSignal(ms) {
 
 async function checkTarget(target) {
   const startedAt = Date.now();
-  const { signal, clear } = buildTimeoutSignal(8000);
+  const { signal, clear } = buildTimeoutSignal(6500);
 
   try {
-    let response;
-
-    if (target.minResults) {
-      response = await fetch(target.endpoint, {
-        method: "GET",
+    const fetchTarget = (method) =>
+      fetch(target.endpoint, {
+        method,
         redirect: "follow",
         signal,
-        cf: { cacheTtl: 0, cacheEverything: false },
+        cf: { cacheTtl: 20, cacheEverything: true },
         headers: {
-          "cache-control": "no-store",
-          pragma: "no-cache",
+          accept: target.readJsonStatus || target.minResults ? "application/json" : "text/html,application/json;q=0.9,*/*;q=0.8",
           "user-agent": "jackgpt-status-probe",
         },
       });
-    } else {
+
+    let response;
+    const preferredMethod = target.readJsonStatus ? "GET" : target.method || "HEAD";
+
+    if (preferredMethod === "HEAD") {
       try {
-        response = await fetch(target.endpoint, {
-          method: "HEAD",
-          redirect: "follow",
-          signal,
-          cf: { cacheTtl: 0, cacheEverything: false },
-          headers: {
-            "cache-control": "no-store",
-            pragma: "no-cache",
-            "user-agent": "jackgpt-status-probe",
-          },
-        });
-      } catch {
-        response = await fetch(target.endpoint, {
-          method: "GET",
-          redirect: "follow",
-          signal,
-          cf: { cacheTtl: 0, cacheEverything: false },
-          headers: {
-            "cache-control": "no-store",
-            pragma: "no-cache",
-            "user-agent": "jackgpt-status-probe",
-          },
-        });
+        response = await fetchTarget("HEAD");
+        if (!response.ok && [405, 403, 502, 503, 504].includes(response.status)) {
+          response = await fetchTarget("GET");
+        }
+      } catch (error) {
+        response = await fetchTarget("GET");
       }
+    } else {
+      response = await fetchTarget(preferredMethod);
     }
 
     const latencyMs = Date.now() - startedAt;
@@ -124,6 +153,22 @@ async function checkTarget(target) {
           : "online"
         : "offline";
     let description = target.description;
+
+    if (target.readJsonStatus) {
+      try {
+        const data = await response.clone().json();
+        if (["online", "degraded", "offline"].includes(data.status)) {
+          status = data.status;
+        }
+        if (data.scanner) {
+          description = `Kalshi Climate Desk reports scanner ${data.scanner}; health endpoint is reachable.`;
+        } else if (typeof data.message === "string" && data.message.trim()) {
+          description = data.message.trim();
+        }
+      } catch {
+        status = response.ok ? status : "offline";
+      }
+    }
 
     if (target.minResults) {
       try {
@@ -149,8 +194,8 @@ async function checkTarget(target) {
       status,
       httpStatus,
       latencyMs,
-      checkedAt: new Date().toISOString(),
       description,
+      checkedAt: new Date().toISOString(),
     };
   } catch (error) {
     return {
@@ -184,7 +229,7 @@ export async function onRequestGet() {
     {
       headers: {
         "content-type": "application/json; charset=utf-8",
-        "cache-control": "no-store, no-cache, must-revalidate, max-age=0",
+        "cache-control": "public, max-age=20, s-maxage=20, stale-while-revalidate=40",
       },
     },
   );
